@@ -4,7 +4,13 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const basicAuth = require('express-basic-auth')
+const session = require('express-session');
+const {sessionConfig}=require('./config/sessionConfig');
+const cookieParser=require('cookie-parser');
+const flash=require('connect-flash');
+require('dotenv').config();
 
+const passport = require('passport');
 
 const {getAllVehicles,
     getVehicleById,
@@ -19,6 +25,23 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use(morgan('combined'));
+
+app.use(cookieParser(process.env.SECONDDRIVE_SECRET_KEY));
+
+app.use(session(sessionConfig))
+
+app.use(flash());
+
+
+
+app.use(function(req, res, next) {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  res.locals.session = req.session;
+  next();
+});
+
 
  
 app.use(basicAuth({
@@ -46,6 +69,6 @@ app.get('/cars/:id', async (req,res)=>{
     }
 })
 
-app.listen('8080',()=>{
-    console.log('Listing to port 8080');
+app.listen('3010',()=>{
+    console.log('Listing to port 3010');
 });

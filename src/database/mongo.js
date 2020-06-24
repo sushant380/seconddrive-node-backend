@@ -1,20 +1,26 @@
 const {MongoClient}=require('mongodb');
+require('dotenv').config();
 
-let database = null;
+let connection = null;
 
 async function getMongoDB(){
-    const connection = await MongoClient.connect(`mongodb://${MONGBO_DB_HOST}:27017`)
-    database=connection.db('seconddrivedb');
+    if(!connection)
+        connection = await MongoClient.connect(`mongodb://${ process.env.MONGO_DB_HOST}:27017`)
+    return connection;
 }
 
 async function getDatabase(){
-    if(!database)
-        await getMongoDB();
-    return database;
+    return await getMongoDB().db('seconddrivedb');
+    
+}
+
+async function getUserDatabase(){
+    return await getMongoDB().db('seconddrivedb');
 }
 
 
 module.exports={
     getMongoDB,
     getDatabase,
+    getUserDatabase,
 }
